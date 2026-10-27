@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ЕБС-ийн химийн хичээлийн VR симуляци</title>
+<style>
+:root{--bg:#0d0f14;--s:#161a22;--s2:#1d222c;--line:#2a313e;--t:#eef1f6;--m:#8d97a8;--fl:#ff6b35;--cy:#35d0ff;--lm:#c6ff3d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--t);font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;line-height:1.7}
+.mono{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:20;background:#0d0f14cc;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;justify-content:space-between;align-items:center;height:58px}
+.brand{font-weight:800;letter-spacing:.05em}.brand b{color:var(--fl)}
+nav a{color:var(--m);text-decoration:none;margin-left:20px;font-size:.92rem;font-weight:600;transition:.2s}
+nav a:hover{color:var(--t)}
+.hero{padding:80px 0 60px;display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:center}
+.tag{display:inline-flex;gap:8px;align-items:center;font-size:.8rem;color:var(--cy);border:1px solid #35d0ff55;background:#35d0ff12;border-radius:6px;padding:4px 12px}
+h1{font-size:clamp(2.2rem,5.6vw,4.3rem);line-height:1.08;margin:18px 0;font-weight:800}
+.fire{background:linear-gradient(90deg,#ff3d3d,#ff9a2e,#ffe14d);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--m);font-size:1.1rem;max-width:540px}
+.btn{display:inline-block;margin:6px 8px 0 0;padding:12px 24px;border-radius:10px;font-weight:700;text-decoration:none;border:1px solid var(--line);color:var(--t);background:var(--s2);cursor:pointer;font:inherit;font-weight:700;transition:.2s}
+.btn.pri{background:var(--fl);border-color:var(--fl);color:#150a05}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px #ff6b3540}
+.ptable{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.el{aspect-ratio:1;border-radius:12px;border:1px solid var(--line);background:var(--s);padding:8px 10px;display:flex;flex-direction:column;justify-content:space-between;transition:.3s;cursor:default}
+.el i{font-style:normal;font-size:.7rem;color:var(--m)}.el b{font-size:2.2rem;line-height:1}.el small{font-size:.68rem;color:var(--m)}
+.el:hover{transform:translateY(-6px) scale(1.04);border-color:currentColor;box-shadow:0 10px 30px -8px currentColor}
+section{padding:64px 0;scroll-margin-top:60px}
+.eyebrow{color:var(--fl);font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+h2{font-size:clamp(1.7rem,3.8vw,2.6rem);margin:6px 0 10px;line-height:1.15}
+.lead{color:var(--m);max-width:760px;margin:0 0 28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.card{background:var(--s);border:1px solid var(--line);border-radius:16px;padding:22px;position:relative;overflow:hidden;transition:.25s}
+.card:hover{border-color:var(--fl);transform:translateY(-4px)}
+.card .sym{position:absolute;right:14px;top:6px;font-size:3.4rem;font-weight:800;color:#ffffff0d}
+.card h3{margin:0 0 6px;font-size:1.1rem}.card h3 span{color:var(--cy);font-size:.82rem;font-weight:600;display:block}
+.card p{margin:0;color:var(--m);font-size:.95rem}
+.lab{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.box{background:var(--s);border:1px solid var(--line);border-radius:20px;padding:24px}
+.salts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.salt{font:inherit;cursor:pointer;color:var(--t);background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:8px 14px;text-align:left;transition:.2s}
+.salt b{display:block;font-size:1.4rem;line-height:1.1}.salt small{color:var(--m);font-size:.72rem}
+.salt.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c),0 0 22px -4px var(--c)}
+.stage{display:grid;place-items:center;background:radial-gradient(circle at 50% 70%,#1b212d,#10131a);border-radius:14px;min-height:340px;padding:10px;position:relative}
+.stage svg{width:100%;max-width:230px}
+#flame{transform-origin:50% 100%;animation:fk .22s infinite alternate}
+@keyframes fk{from{transform:scale(1,1) skewX(0)}to{transform:scale(.94,1.06) skewX(2deg)}}
+.name{margin:12px 0 0;font-size:1.05rem}.name b{color:var(--c,var(--fl))}
+.note{color:var(--m);font-size:.9rem;margin:6px 0 0}
+.thermo{display:flex;gap:18px;align-items:flex-end;justify-content:center}
+.big{font-size:3.4rem;font-weight:800;line-height:1}
+.bub{position:absolute;bottom:42%;width:8px;height:8px;border-radius:50%;background:#ffffffaa;opacity:0}
+.on .bub{animation:up 1.2s ease-in infinite}
+@keyframes up{0%{transform:translateY(0);opacity:0}20%{opacity:.9}100%{transform:translateY(-120px);opacity:0}}
+.badge{display:inline-block;padding:3px 12px;border-radius:99px;font-size:.78rem;font-weight:700;margin-left:8px}
+.exo{background:#ff3d3d25;color:#ff7a6b}.endo{background:#35d0ff25;color:#35d0ff}
+.steps{counter-reset:s;display:grid;gap:12px}
+.steps div{counter-increment:s;display:flex;gap:16px;align-items:flex-start;background:var(--s);border:1px solid var(--line);border-radius:14px;padding:16px 20px}
+.steps div::before{content:counter(s);font-family:ui-monospace,monospace;background:var(--fl);color:#150a05;font-weight:800;min-width:34px;height:34px;border-radius:8px;display:grid;place-items:center}
+.steps b{display:block}.steps span{color:var(--m);font-size:.93rem}
+.apk{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:linear-gradient(120deg,#ff6b3522,#35d0ff18);border:1px solid var(--line);border-radius:20px;padding:26px;margin-bottom:20px}
+.apk .ic{font-size:3rem}.apk h3{margin:0}.apk p{margin:4px 0 0;color:var(--m)}
+.video{background:var(--s);border:1px solid var(--line);border-radius:20px;padding:14px;max-width:900px;transition:.3s}
+.video:hover{border-color:var(--fl);box-shadow:0 14px 40px -14px #ff6b3566}
+.video .ratio{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video .cap{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 6px 4px;color:var(--m);font-size:.95rem}
+.video .btn{margin:0;padding:9px 18px;font-size:.9rem}
+.rv{opacity:0;transform:translateY(28px);transition:.7s}.rv.in{opacity:1;transform:none}
+footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:var(--m);font-size:.9rem}
+@media(max-width:800px){.hero,.lab{grid-template-columns:1fr}nav{display:none}.ptable{max-width:330px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand mono">CHEM<b>·</b>VR</div>
+<nav><a href="#goal">Зорилго</a><a href="#tech">Технологи</a><a href="#video">Бичлэг</a><a href="#pros">Давуу тал</a></nav></div></header>
+
+<div class="wrap">
+<div class="hero">
+  <div>
+    <span class="tag mono">Unreal Engine 5.6 · Meta Quest</span>
+    <h1>Химийн хичээл <span class="fire">VR-д амилав</span></h1>
+    <p>ЕБС-ийн химийн лабораторийн туршилтуудыг виртуал орчинд симуляци хийж, сурагчдад аюулгүй, шинэлэг, интерактив сургалтын орчин бүрдүүлсэн төсөл.</p>
+    <a class="btn pri" href="#tech">Технологи</a><a class="btn" href="#pros">Давуу тал</a>
+  </div>
+  <div class="ptable" aria-hidden="true">
+    <div class="el" style="color:#ff4d4d"><i class="mono">3</i><b class="mono">Li</b><small>Лити · улаан</small></div>
+    <div class="el" style="color:#ffd93d"><i class="mono">11</i><b class="mono">Na</b><small>Натри · шар</small></div>
+    <div class="el" style="color:#b18cff"><i class="mono">19</i><b class="mono">K</b><small>Кали · нил ягаан</small></div>
+    <div class="el" style="color:#4cff8a"><i class="mono">56</i><b class="mono">Ba</b><small>Бари · ногоон</small></div>
+    <div class="el" style="color:#35d0ff"><i class="mono">8</i><b class="mono">O</b><small>Хүчилтөрөгч</small></div>
+    <div class="el" style="color:#ff9a2e"><i class="mono">1</i><b class="mono">H</b><small>Устөрөгч</small></div>
+  </div>
+</div>
+
+<section id="goal" class="rv">
+  <div class="eyebrow mono">01 / Үндэслэл ба зорилго</div>
+  <h2>Практик дадлагын бодит асуудал</h2>
+  <p class="lead">Бодит лабораторид багаж төхөөрөмж, бодисын хангамж дутагдалтай байхаас гадна хортой, аюултай бодисуудтай харьцахад сурагчдын аюулгүй байдлыг хангах асуудал хүндээр тавигддаг.</p>
+  <div class="box"><b>🎯 Зорилго:</b> <span style="color:var(--m)"><b style="color:var(--t)">Unreal Engine 5.6</b> болон <b style="color:var(--t)">Meta Quest</b> экосистемийг ашиглан лабораторийн туршилтуудыг VR орчинд симуляци хийж, сурагчдын сурах чадварыг сайжруулах.</span></div>
+</section>
+
+<section id="tech" class="rv">
+  <div class="eyebrow mono">02 / Технологийн шийдэл</div>
+  <h2>Хэрхэн бүтээсэн бэ?</h2>
+  <p class="lead">ЕБС-ийн сургалтын онцлогт тохируулан, хамгийн сүүлийн үеийн game engine технологид суурилсан.</p>
+  <div class="grid">
+    <div class="card"><div class="sym mono">Bl</div><h3>3D орчны загварчлал<span>Blender → Unreal Engine 5</span></h3><p>Лабораторийн тоног төхөөрөмж, шил сав, багажийг бодит мэт загварчилж UE5-д импортолсон.</p></div>
+    <div class="card"><div class="sym mono">Ni</div><h3>Визуал эффект<span>Niagara Particle System</span></h3><p>Хариу урвал, асгаралт, өнгө солигдох, буцлах (NS Bubbles), дулааны уур (NS Steam)-ыг реалистикаар дүрсэлсэн.</p></div>
+    <div class="card"><div class="sym mono">Bp</div><h3>Логик програмчлал<span>Blueprint Visual Scripting</span></h3><p>Текстэн код бичихгүйгээр зангилаа (node) системээр интерактив үйлдэл, туршилтын логикийг уян хатан шийдсэн.</p></div>
+    <div class="card"><div class="sym mono">Lt</div><h3>Шугаман хяналт<span>Line Trace / Raycasting</span></h3><p>Харах чиглэлийн объектыг илрүүлж, лазер термометрээр хуруу шилний температурыг бодит цагт уншина.</p></div>
+    <div class="card"><div class="sym mono">Dt</div><h3>Өгөгдлийн менежмент<span>Data Table</span></h3><p>Бодисын мэдээлэл, дөлний өнгийг (Flame Color) хатуу кодгүйгээр хүснэгтээр удирдсан.</p></div>
+    <div class="card"><div class="sym mono">Ui</div><h3>Аюулгүй байдлын Label UI<span>Billboard Name Tag</span></h3><p>Хөвөгч Name Tag-аар бодисын мэдээлэл, аюулгүй байдлын санамжийг харуулж, бодис андуурахаас сэргийлнэ.</p></div>
+  </div>
+</section>
+
+<section id="video" class="rv">
+  <div class="eyebrow mono">03 / Бичлэг</div>
+  <h2>Симуляцийн бичлэг</h2>
+  <p class="lead">VR симуляцийн ажиллагааг видео бичлэгээр үзнэ үү.</p>
+  <div class="video">
+    <div class="ratio"><iframe src="https://www.youtube-nocookie.com/embed/fNp3Qevg-gU" title="ЕБС-ийн химийн хичээлийн VR симуляцийн бичлэг" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+    <div class="cap"><span>🎬 ЕБС-ийн химийн хичээлийн VR симуляци</span><a class="btn pri" href="https://youtu.be/fNp3Qevg-gU" target="_blank" rel="noopener">YouTube дээр үзэх ↗</a></div>
+  </div>
+</section>
+
+<section id="pros" class="rv">
+  <div class="eyebrow mono">04 / Давуу тал ба дүгнэлт</div>
+  <h2>APK — утасгүй, бие даасан</h2>
+  <div class="apk"><div class="ic">📦</div><div><h3>Android Package Kit (APK)</h3><p>Meta Quest дээр компьютер, кабель, интернэт холболтгүйгээр бие даан, утасгүй ажиллана.</p></div></div>
+  <div class="steps">
+    <div><p style="margin:0"><b>Аюулгүй сургалт</b><span>Аюултай химийн урвалыг ямар ч эрсдэлгүй, айдасгүй орчинд олон дахин туршиж, алдаанаас суралцана.</span></p></div>
+    <div><p style="margin:0"><b>Ойлгомжтой байдал</b><span>Интерактив заавар самбар, термометрийн UI нь сурагчдын анхаарал, хичээлийн ойлгомжийг эрс нэмэгдүүлнэ.</span></p></div>
+    <div><p style="margin:0"><b>Ирээдүйн сургалт</b><span>Бодит лаборатори байгуулах өндөр өртөг, материалын нөөцийг хэмнэж, ЕБС-ийн химийн сургалтын чанарыг дээшлүүлнэ.</span></p></div>
+  </div>
+</section>
+</div>
+<footer>ЕБС-ийн химийн хичээлийн VR симуляци · Unreal Engine 5.6 · Meta Quest</footer>
+
+<script>
+/* reveal */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});
+document.querySelectorAll('.rv').forEach(e=>io.observe(e));
+</script>
+</body>
+</html>
